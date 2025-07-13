@@ -38,36 +38,36 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 }
 
-float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	// ignore if already dead
-	if (CurrentHP <= 0.0f)
-	{
-		return 0.0f;
-	}
-
-	// Reduce HP
-	CurrentHP -= Damage;
-
-	// Have we depleted HP?
-	if (CurrentHP <= 0.0f)
-	{
-		// deactivate the weapon
-		if (IsValid(CurrentWeapon))
-		{
-			CurrentWeapon->DeactivateWeapon();
-		}
-		
-
-		// reset the bullet counter UI
-		OnBulletCountUpdated.Broadcast(0, 0);
-
-		// destroy this character
-		Destroy();
-	}
-
-	return Damage;
-}
+//float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//{
+//	// ignore if already dead
+//	if (CurrentHP <= 0.0f)
+//	{
+//		return 0.0f;
+//	}
+//
+//	// Reduce HP
+//	CurrentHP -= Damage;
+//
+//	// Have we depleted HP?
+//	if (CurrentHP <= 0.0f)
+//	{
+//		// deactivate the weapon
+//		if (IsValid(CurrentWeapon))
+//		{
+//			CurrentWeapon->DeactivateWeapon();
+//		}
+//		
+//
+//		// reset the bullet counter UI
+//		OnBulletCountUpdated.Broadcast(0, 0);
+//
+//		// destroy this character
+//		Destroy();
+//	}
+//
+//	return Damage;
+//}
 
 void AShooterCharacter::DoStartFiring()
 {

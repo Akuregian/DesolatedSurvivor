@@ -2,6 +2,8 @@
 
 
 #include "Shooter/AI/ShooterNPC.h"
+
+#include "AbilitySystemComponent.h"
 #include "Shooter/ShooterWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Camera/CameraComponent.h"
@@ -11,10 +13,30 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TimerManager.h"
+#include "AttributeSet/DesolatedSurvivorHealthAttribute.h"
+#include "GameplayTagContainer.h"
+
+AShooterNPC::AShooterNPC()
+{
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+
+	HealthAttribute = CreateDefaultSubobject<UDesolatedSurvivorHealthAttribute>(TEXT("HealthAttribute"));
+}
 
 void AShooterNPC::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (HealthAttribute)
+	{
+		HealthAttribute->OnHealthChangeEvent.AddDynamic(this, &AShooterNPC::OnHealthChangedEvent);
+	}
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		AbilitySystemComponent->SetNumericAttributeBase(UDesolatedSurvivorHealthAttribute::GetHealthAttribute(), InitialHealth);
+	}
 
 	// spawn the weapon
 	FActorSpawnParameters SpawnParams;
@@ -31,6 +53,20 @@ void AShooterNPC::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	// clear the death timer
 	GetWorld()->GetTimerManager().ClearTimer(DeathTimer);
+}
+
+void AShooterNPC::OnHealthChangedEvent(float Magntiude, float Health)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("ShooterNPC Health: %f"), Health));
+	if (Health <= 0.0f)
+	{
+		if (IsValid(Weapon))
+		{
+			Weapon->DeactivateWeapon();
+		}
+
+		Destroy();
+	}
 }
 
 float AShooterNPC::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -205,4 +241,35 @@ void AShooterNPC::StopShooting()
 
 	// signal the weapon
 	Weapon->StopFiring();
+}
+
+void AShooterNPC::DumpActiveTagsOnASC(FColor TextColor)
+{
+	if (!AbilitySystemComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[DebugPrintTags] No ASC found."));
+		return;
+	}
+
+	// 1. Gather owned tags
+	FGameplayTagContainer OwnedTags;
+	AbilitySystemComponent->GetOwnedGameplayTags(OwnedTags);
+
+	// 2. Convert to a single-line string
+	//    e.g. "Survival.Ability.Weapon.StartFiring,Status.Poisoned"
+	FString TagsString = OwnedTags.ToStringSimple();
+
+	// 3. On-screen debug: use a constant message key so we don't spam multiple lines
+	static const int32 DebugMsgKey = 1337;
+	const float DisplayTime = 1.5f; // seconds
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			DebugMsgKey,
+			DisplayTime,
+			TextColor,
+			FString::Printf(TEXT("%s ActiveTags: %s"), *GetOwner()->GetName(), *TagsString)
+		);
+	}
 }

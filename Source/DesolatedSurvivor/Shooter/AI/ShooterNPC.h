@@ -5,7 +5,11 @@
 #include "CoreMinimal.h"
 #include "Characters/DesolatedSurvivorCharacter.h"
 #include "Shooter/ShooterWeaponHolder.h"
+#include "AbilitySystemInterface.h"
 #include "ShooterNPC.generated.h"
+
+class UDesolatedSurvivorHealthAttribute;
+class UAbilitySystemComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPawnDeathDelegate);
 
@@ -17,17 +21,32 @@ class AShooterWeapon;
  *  Holds and manages a weapon
  */
 UCLASS(abstract)
-class DESOLATEDSURVIVOR_API AShooterNPC : public ADesolatedSurvivorCharacter, public IShooterWeaponHolder
+class DESOLATEDSURVIVOR_API AShooterNPC : public ADesolatedSurvivorCharacter, public IShooterWeaponHolder, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
+	AShooterNPC();
 
 	/** Current HP for this character. It dies if it reaches zero through damage */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Damage")
 	float CurrentHP = 100.0f;
 
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; };
+
 protected:
+
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY()
+	TObjectPtr<UDesolatedSurvivorHealthAttribute> HealthAttribute;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Health")
+	float InitialHealth = 100.0f;
+
+	UFUNCTION()
+	void OnHealthChangedEvent(float Magntiude, float Health);
 
 	/** Name of the collision profile to use during ragdoll death */
 	UPROPERTY(EditAnywhere, Category="Damage")
@@ -150,4 +169,7 @@ public:
 
 	/** Signals this character to stop shooting */
 	void StopShooting();
+
+	UFUNCTION(BlueprintCallable, Category = "Debug")
+	void DumpActiveTagsOnASC(FColor TextColor);
 };

@@ -20,6 +20,7 @@ public class DesolatedSurvivor : ModuleRules
 			"UMG",
 			"GameplayAbilities",
 			"GameplayTasks",
+			"GameplayTags",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

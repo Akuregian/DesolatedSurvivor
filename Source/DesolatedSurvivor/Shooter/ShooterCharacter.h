@@ -81,11 +81,6 @@ protected:
 
 public:
 
-	/** Handle incoming damage */
-	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
-public:
-
 	/** Handles start firing input */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void DoStartFiring();

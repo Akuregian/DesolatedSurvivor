@@ -7,6 +7,8 @@
 #include "AbilitySystemInterface.h"
 #include "DesolatedSurvivorPlayerCharacter.generated.h"
 
+class UDesolatedSurvivorHealthAttribute;
+
 /**
  * 
  */
@@ -18,6 +20,8 @@ class DESOLATEDSURVIVOR_API ADesolatedSurvivorPlayerCharacter : public AShooterC
 public:
 	ADesolatedSurvivorPlayerCharacter();
 
+	virtual void BeginPlay() override;
+
 	/* IAbilitySystemInterface */
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; };
 
@@ -28,5 +32,18 @@ protected:
 	/* Core GAS component */
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-	
+
+	/* Attribute Set for GAS Component */
+	UPROPERTY()
+	TObjectPtr<UDesolatedSurvivorHealthAttribute> HealthAttribute;
+
+	/* Initial Health */
+	UPROPERTY(EditAnywhere)
+	float InitialHealth = 100.0f;
+
+	UFUNCTION()
+	void OnHealthChanged(float Magnitude, float NewHealth);
+
+	UFUNCTION(BlueprintCallable, Category = "Debug")
+	void DumpActiveTagsOnASC(FColor TextColor);
 };

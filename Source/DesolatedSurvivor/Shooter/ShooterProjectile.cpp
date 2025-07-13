@@ -5,7 +5,9 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
+#include "AbilitySystemInterface.h"
+#include "AbilitySystemComponent.h"
+#include "GameplayEffectTypes.h"
 #include "GameFramework/DamageType.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/Controller.h"
@@ -81,6 +83,21 @@ void AShooterProjectile::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Ot
 
 void AShooterProjectile::DamageCharacter(ACharacter* HitCharacter, const FHitResult& Hit)
 {
-	// apply damage to the character
-	UGameplayStatics::ApplyDamage(HitCharacter, HitDamage, GetInstigator()->GetController(), this, HitDamageType);
+	/* Cast to check if IAbilitySystemInterface is implemented */
+	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(HitCharacter))
+	{
+		/* Get the ASC */
+		UAbilitySystemComponent* ASC = ASCInterface->GetAbilitySystemComponent();
+		if (ASC && DamageEffectClass)
+		{
+			FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, EffectContext);
+
+			if (SpecHandle.IsValid())
+			{
+				ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			}
+		}
+	}
+	
 }

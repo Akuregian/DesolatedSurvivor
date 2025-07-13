@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ShooterProjectile.generated.h"
 
+class UGameplayEffect;
 class USphereComponent;
 class UProjectileMovementComponent;
 class ACharacter;
@@ -25,7 +26,7 @@ class DESOLATEDSURVIVOR_API AShooterProjectile : public AActor
 	/** Handles movement for the projectile */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* ProjectileMovement;
-
+	
 protected:
 
 	/** Loudness of the AI perception noise done by this projectile on hit */
@@ -59,6 +60,10 @@ public:
 
 	/** Constructor */
 	AShooterProjectile();
+	
+	/* DamageEffect class for when projectile hits enemey */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameplayEffect")
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 protected:
 	
