@@ -1,0 +1,64 @@
+# ───────── Unreal Engine ─────────
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+*.opensdf
+*.sdf
+*.suo
+*.log
+*.tmp
+*.cache
+*_BuiltData.uasset
+*.vsconfig
+
+# ───────── IDEs ─────────
+# Rider
+.idea/
+*.DotSettings.user
+*.sln.iml
+*.code-workspace
+
+# Ignore Rider-generated intermediate Unreal files
+.Rider/
+
+# Ignore Rider's Unreal project cache (caused you to hit 100MB)
+Intermediate/ProjectFiles/.Rider/
+
+# Ignore asset registry cache
+CachedAssetRegistry_*.bin
+
+
+# Visual Studio
+.vs/
+*.VC.db
+*.VC.opendb
+
+# VS Code
+.vscode/
+
+# Xcode / macOS
+*.xcworkspace/
+*.xcuserdatad/
+*.xcuserstate
+*.xcodeproj
+.DS_Store
+
+# ───────── Optional: Git LFS for large binary assets ─────────
+# Uncomment if using Git LFS for Unreal assets
+*.uasset filter=lfs diff=lfs merge=lfs -text
+*.umap  filter=lfs diff=lfs merge=lfs -text
+
+# ───────── General C++ Build Artifacts ─────────
+*.obj
+*.pdb
+*.exe
+*.dll
+*.lib
+*.exp
+*.app
+*.so
+*.dylib
+*.a
+*.pch
